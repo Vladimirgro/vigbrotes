@@ -1,0 +1,23 @@
+{% extends "/base/dashboard.html" %}
+
+{% block main %}
+
+    <main class="main-container">  
+        <ul class="nav nav-underline">
+            <li class="nav-item">
+                <a class="nav-link {% if request.endpoint == 'brotes_bp.register_brotes' %}active{% endif %}" aria-current="page" href="{{ url_for('brotes_bp.register_brotes') }}">Registro de brotes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.endpoint == 'brotes_bp.lista_brotes' %}active{% endif %}" href="{{ url_for('brotes_bp.lista_brotes') }}">Listado</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.endpoint == 'catalogo_brotes.register_catalogo' %}active{% endif %}" href="{{ url_for('catalogo_brotes.register_catalogo') }}">Catalogo diagnóstico</a>
+            </li>
+        </ul>
+    </main>
+
+    {% block views %}
+
+    {% endblock %}
+
+{% endblock %}

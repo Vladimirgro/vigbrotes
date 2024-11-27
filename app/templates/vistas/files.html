@@ -1,0 +1,31 @@
+{% extends "/base/dashboard.html" %}
+
+{% block main %}
+    <h1>Archivos Subidos</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Ruta</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for brote in brotes %}
+            <tr>
+                <td>{{ brote[1] }}</td>
+                <td>{{ brote[3] }}</td>
+                <td><a href="{{ brote[2] }}" target="_blank">Abrir</a></td>
+                <td>{{ brote[4] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+              <div class="">
+            <hr>
+            <div class="form-buttons text-center">
+              <a href="{{ url_for('brotes_bp.lista_brotes') }}" type="button" class="btn btn-secondary">Regresar</a>                
+            </div>
+          </div> 
+{% endblock %}

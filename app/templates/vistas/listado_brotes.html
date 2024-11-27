@@ -1,0 +1,61 @@
+{% extends "/vistas/brotes.html" %}
+
+{% block views %}
+
+<h1>Listado de Brotes</h1>
+<table id="brotes-table" class="display">
+    <thead>
+        <tr>
+            <th>Folio Notificación</th>
+            <th>Tipo de Evento</th>
+            <th>Institución</th>
+            <th>Municipio</th>
+            <th>Fecha de Notificación</th>
+            <th>Diagnóstico de Sospecha</th>
+            <th>Acciones</th>            
+        </tr>
+    </thead>
+    <tbody>
+        {% for brote in brotes %}
+        <tr>
+            <td>{{ brote.folionotinmed }}</td>
+            <td>{{ brote.tipoevento }}</td>
+            <td>{{ brote.institucion }}</td>
+            <td>{{ brote.municipio }}</td>
+            <td>{{ brote.fechnotinmed | format_date }}</td>  <!-- Formato de fecha -->
+            <td>{{ brote.diagsospecha }}</td>
+            <td>
+                <a href="/edit_brote/{{ brote.idbrote }}" class="btn btn-edit">Editar</a>
+            </td>            
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#brotes-table').DataTable({
+            "paging": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "pageLength": 10,
+            "language": {
+                "search": "Buscar:",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                "paginate": {
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            }
+        });
+    });
+</script>
+
+{% endblock %}

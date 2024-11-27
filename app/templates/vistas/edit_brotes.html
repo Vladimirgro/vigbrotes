@@ -1,0 +1,257 @@
+{% extends "/vistas/brotes.html" %}
+
+{% block views %}
+
+<main class="main-container">
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Actualizar brote epidemiológico</h2>
+      <ul class="nav nav-underline">          
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'catalogo_brotes.register_catalogo' %}active{% endif %}" href="{{ url_for('brotes_bp.files') }}">Documentos</a>
+        </li>
+    </ul>
+  </div>
+  <main class="main-container">  
+      
+  </main>
+  <div class="card-brote">
+    <div class="form">      
+      <form  method="POST" action="{{ url_for('brotes_bp.edit_brote', idbrote=brote.idbrote) }}" enctype="multipart/form-data">
+
+          <div class="form-group">
+            <label for="folNotinmed">Folio notinmed:</label>
+            <input type="text" id="folNotinmed" name="folNotinmed" placeholder="Ingresa folio notinmed" value="{{ brote.folionotinmed }}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="fecNotnotinmed">Fecha de notificación notinmed:</label>
+            <input type="date" id="fecNotnotinmed" name="fecNotnotinmed" value="{{ brote.fechnotinmed.strftime('%Y-%m-%d') if brote.fechnotinmed else '' }}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="evento">Tipo de evento:</label>
+            <select id="evento" name="evento" required>
+                <option value="" disabled {% if not brote.tipoevento %}selected{% endif %}>Selecciona un tipo de evento</option>
+                <option value="BROTE COMUNITARIO" {% if brote.tipoevento == 'BROTE COMUNITARIO' %}selected{% endif %}>BROTE COMUNITARIO</option>
+                <option value="BROTE ESCOLAR" {% if brote.tipoevento == 'BROTE ESCOLAR' %}selected{% endif %}>BROTE ESCOLAR</option>
+                <option value="BROTE FAMILIAR" {% if brote.tipoevento == 'BROTE FAMILIAR' %}selected{% endif %}>BROTE FAMILIAR</option>
+                <option value="BROTE FORANEO" {% if brote.tipoevento == 'BROTE FORANEO' %}selected{% endif %}>BROTE FORANEO</option>
+                <option value="BROTE LOCALIZADO" {% if brote.tipoevento == 'BROTE LOCALIZADO' %}selected{% endif %}>BROTE LOCALIZADO</option>
+                <option value="BROTE NOSOCOMIAL" {% if brote.tipoevento == 'BROTE NOSOCOMIAL' %}selected{% endif %}>BROTE NOSOCOMIAL</option>
+                <option value="CLUSTER" {% if brote.tipoevento == 'CLUSTER' %}selected{% endif %}>CLUSTER</option>
+              </select>  
+          </div>
+
+          <div class="form-group">
+            <label for="unidad">Unidad notificante:</label>
+            <input type="text" id="unidad" name="unidad" placeholder="Ingresa nombre de la unidad" value="{{ brote.unidadnotif }}" required>
+          </div>
+
+          <div class="form-group">            
+            <label for="institucion">Institución:</label>
+            <select id="institucion" name="institucion" required>
+                <option value="" disabled {% if not brote.institucion %}selected{% endif %}>Selecciona la institución</option>
+                <option value="IMSS Bienestar" {% if brote.institucion == 'IMSS Bienestar' %}selected{% endif %}>IMSS Bienestar</option>
+                <option value="IMSS Oportunidades" {% if brote.institucion == 'imssoport' %}selected{% endif %}>IMSS Oportunidades</option>
+                <option value="IMSS RO" {% if brote.institucion == 'IMSS RO' %}selected{% endif %}>IMSS RO</option>
+                <option value="ISSSTE" {% if brote.institucion == 'ISSSTE' %}selected{% endif %}>ISSSTE</option>
+                <option value="PEMEX" {% if brote.institucion == 'PEMEX' %}selected{% endif %}>PEMEX</option>          
+            </select>      
+          </div>
+
+          <div class="form-group">
+            <label for="fecinicio">Fecha de inicio del brote:</label>
+            <input type="date" id="fechainicio" name="fechainicio" value="{{ brote.fechinicio.strftime('%Y-%m-%d') if brote.fechinicio else '' }}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="fecnotifica">Fecha de notificación:</label>
+            <input type="date" id="fechanotifica" name="fechanotifica" value="{{ brote.fechnotifica.strftime('%Y-%m-%d') if brote.fechnotifica else '' }}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="diagsospecha">Diagnóstico de sospecha:</label>
+            <select id="diagsospecha" name="diagsospecha" required>
+                <option value="" disabled {% if not brote.diagsospecha %}selected{% endif %}>Selecciona</option>
+                {% for diagnostico in diagnosticos %}
+                    <option value="{{ diagnostico['diagnostico'] }}" {% if brote.diagsospecha == diagnostico['diagnostico'] %}selected{% endif %}>
+                        {{ diagnostico['diagnostico'] }}
+                    </option>
+                {% endfor %}
+            </select>  
+          </div>
+
+          <div class="form-group">
+            <label for="juris">Distrito:</label>
+            <select id="juris" name="juris" required>
+              <option value="" disabled {% if not brote.jurisdiccion %}selected{% endif %}>Selecciona</option>
+              {% for distrito in distritos %}
+                  <option value="{{ distrito['distrito'] }}" {% if brote.jurisdiccion == distrito['distrito'] %}selected{% endif %}>
+                      {{ distrito['distrito'] }}
+                  </option>
+              {% endfor %}
+            </select>        
+          </div>
+
+          <div class="form-group">
+            <label for="municipio">Municipio:</label>
+            <select id="municipio" class="form-control" name="municipio" required>
+              <option value="" disabled {% if not brote.municipio %}selected{% endif %}>Selecciona</option>
+              {% for mun in municipios %}
+                  <option value="{{ mun['nomMunicipio'] }}" {% if brote.municipio == mun['nomMunicipio'] %} selected {% endif %}>
+                      {{ mun['nomMunicipio'] }}
+                  </option>
+              {% endfor %}
+            </select>  
+          </div>
+
+          <div class="form-group">
+            <label for="unilocalidaddad">Localidad:</label>
+            <input type="text" id="unilocalidaddad" name="unilocalidaddad" placeholder="Ingresa nombre de la localidad" value="{{ brote.localidad }}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="pobmascexpuesta">Población masculina expuesta:</label>
+            <input type="number" id="pobmascexpuesta" name="pobmascexpuesta" value="{{ brote.pobmascexp }}" required>
+          </div>        
+
+          <div class="form-group">
+            <label for="pobfemexpuesta">Población femenino expuesta:</label>
+            <input type="number" id="pobfemexpuesta" name="pobfemexpuesta" value="{{ brote.pobfemexp }}" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="probables">Casos probables:</label>
+            <input type="number" id="probables" name="probables" value="{{ brote.casosprob }}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmados">Casos confirmados:</label>
+            <input type="number" id="confirmados" name="confirmados" value="{{ brote.casosconf }}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="defunciones">Defunciones:</label>
+            <input type="number" id="defunciones" name="defunciones" value="{{ brote.defunciones }}" required>
+          </div>     
+
+          <div class="form-group">
+            <label for="fecUcaso">Fecha último caso:</label>
+            <input type="date" id="fecUcaso" name="fecUcaso" value="{{ brote.fechultimocaso.strftime('%Y-%m-%d') if brote.fechultimocaso else '' }}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="fechalta">Fecha alta:</label>
+            <input type="date" id="fechalta" name="fechalta" value="{{ brote.fechalta.strftime('%Y-%m-%d') if brote.fechalta else '' }}">
+          </div>
+
+          <div class="form-group">
+            <label for="resultado">Resultado:</label>
+            <input type="text" id="resultado" name="resultado" placeholder="Ingresa el resultado" value="{{ brote.resultado }}">
+          </div>
+          
+          <div class="form-group">
+            <label for="folAltaNoti">Folio alta notinmed:</label>
+            <input type="text" id="folAltaNoti" name="folAltaNoti" placeholder="Ingresa folio alta notinmed" value="{{ brote.folioaltanotin }}">
+          </div>
+
+          <div class="form-group">
+            <label for="fecAltaNotinmed">Fecha alta  notinmed:</label>
+            <input type="date" id="fecAltaNotinmed" name="fecAltaNotinmed" value="{{ brote.fechaltanotin.strftime('%Y-%m-%d') if brote.fechaltanotin else '' }}">
+          </div>       
+
+          <div class="form-group">
+            <label for="nota">Se realizó nota:</label>            
+            <select id="nota" name="nota" required>
+                <option value="" disabled {% if not brote.nota %}selected{% endif %}>Selecciona</option>
+                <option value="SI" {% if brote.nota == 'SI' %}selected{% endif %}>SI</option>
+                <option value="NO" {% if brote.nota == 'NO' %}selected{% endif %}>NO</option>
+            </select>
+          </div>
+
+          <div class="form-group">            
+            <div class="mb-3">
+              <label for="formFile" class="form-label">Adjuntar documentos</label>
+              <input class="form-control" type="file" name="archivo" id="formFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xlsx">
+            </div>
+          </div>          
+          <div class="form-group">            
+            <label for="documento">Tipo de notificación:</label>
+            <select id="documento" name="documento">
+                <option value="" disabled {% if not institucion %}selected{% endif %}>Selecciona</option>                
+                <option value="notificacion_inicial" {% if institucion == 'notificacion_inicial' %}selected{% endif %}>Notificación inicial</option>
+                <option value="seguimiento" {% if institucion == 'seguimiento' %}selected{% endif %}>Seguimiento</option>
+                <option value="notificacion_final" {% if institucion == 'notificacion_final' %}selected{% endif %}>Notificación final</option>
+                <option value="nota" {% if institucion == 'nota' %}selected{% endif %}>Nota</option>                
+            </select>      
+          </div>
+    </div>
+      <!-- Card para los botones -->       
+          <div class="">
+            <hr>
+            <div class="form-buttons text-center">
+              <a href="{{ url_for('brotes_bp.lista_brotes') }}" type="button" class="btn btn-secondary">Regresar</a>
+                <button type="submit" class="btn btn-primary">Actualizar</button>            
+            </div>
+          </div>  
+
+    </form>
+
+
+    
+  </div> 
+        
+</main>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form'); // Selecciona el formulario
+  
+      form.addEventListener('submit', function(event) {
+          event.preventDefault(); // Evita el envío inicial del formulario
+  
+          Swal.fire({
+              title: '¿Desea guardar los cambios?',
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonText: 'Sí',
+              cancelButtonText: 'No',
+              reverseButtons: true,
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  form.submit(); // Envía el formulario si el usuario confirma
+              } else {
+                  Swal.fire({
+                      title: 'Cambios no guardados',
+                      icon: 'info',
+                      timer: 3000,
+                      showConfirmButton: false
+                  });
+              }
+          });
+      });
+  });
+  </script>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for category, message in messages %}
+                Swal.fire({
+                    icon: "{{ category }}",
+                    title: "{{ message }}",
+                    showConfirmButton: true,
+                    timer: 5000
+                });
+            {% endfor %}
+        });
+    </script>
+{% endif %}
+{% endwith %}
+
+{% endblock %}

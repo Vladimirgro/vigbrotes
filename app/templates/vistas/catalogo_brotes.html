@@ -1,0 +1,217 @@
+{% extends "/vistas/brotes.html" %}
+
+{% block views %}
+  <div class="mb-3">
+      <h4>Catalogos</h4>
+  </div>
+
+<div class="row">
+      <div class="col-12 col-md-6 d-flex">
+          <div class="card flex-fill border-0 illustration">
+              <div class="card-body p-0 d-flex flex-fill">
+                  <div class="row g-0 w-100">                      
+                        <div class="col-6">
+                          <div class="p-3 m-1">
+                              <h4>Alta de diagnósticos</h4>                              
+                          </div>
+                        </div> 
+
+                        <div class="col-6">
+                            <div class="p-3 m-1">
+                                    <!-- Button trigger modal -->
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+                                            Agregar
+                                        </button>
+                                        
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModal" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="Modal_agrega_diag">Agregar diagnóstico</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="text" name= "diagnostico_cat" class="form-control" id="cat_diagnostico" placeholder="">
+                                                        <label for="cat_diagnostico">Diagnóstico</label>
+                                                    </div>
+                                                    <div class="form-floating">
+                                                        <input type="number" name= "incubacion_cat" class="form-control" id="periodoIncubacion" placeholder="">
+                                                        <label for="periodoIncubacion">Periodo de incubación</label>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                    <button type="button" class="btn btn-primary" onclick="enviarDiagnostico()">Guardar</button>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Modal para Editar Diagnóstico -->
+                                        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="editModalLabel">Editar Diagnóstico</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" name="edit_diagnostico" class="form-control" id="edit_diagnostico" placeholder="Diagnóstico">
+                                                            <label for="edit_diagnostico">Diagnóstico</label>
+                                                        </div>
+                                                        <div class="form-floating">
+                                                            <input type="number" name="edit_periodoIncubacion" class="form-control" id="edit_periodoIncubacion" placeholder="Periodo de Incubación">
+                                                            <label for="edit_periodoIncubacion">Periodo de Incubación</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                        <button type="button" class="btn btn-primary" onclick="actualizarDiagnostico()">Guardar cambios</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                            </div>             
+                        </div>
+                    </div>
+                </div>
+          </div>
+      </div>
+</div>
+
+<div class="row">
+    <h4>Lista de Diagnósticos</h4>
+    <table class="brotes-grid">
+        <thead>
+            <tr>                
+                <th>Diagnóstico</th>
+                <th>Período de incubación</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Aquí se llenará con los diagnósticos mediante JavaScript -->
+            <td>
+                <button type="button" onclick="editarDiagnostico(diagnostico.iddiagnostico)" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal">Editar</button>                
+            </td>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function enviarDiagnostico() {
+        // Obtén los datos del formulario
+        var diagnostico = $('#cat_diagnostico').val();
+        var periodoIncubacion = $('#periodoIncubacion').val();
+
+        // Crear el objeto de datos
+        var formData = {
+            diagnostico_cat: diagnostico,
+            incubacion_cat: periodoIncubacion
+        };
+
+        // Envío de datos mediante AJAX
+        $.ajax({
+            type: 'POST',
+            url: '/register_catalogo',  // Asegúrate de que esta URL sea correcta
+            data: JSON.stringify(formData),
+            contentType: 'application/json',
+            success: function(response) {
+                // Muestra un mensaje de éxito usando SweetAlert
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: response.message,
+                });
+
+                // Limpia los campos del modal
+                $('#cat_diagnostico').val('');
+                $('#periodoIncubacion').val('');
+
+                // Cierra el modal
+                $('#createModal').modal('hide');
+
+                // Actualiza la lista de diagnósticos
+                updateDiagnosticos();
+            },
+            error: function(error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.responseJSON.message,
+                });
+            }
+        });
+    }
+
+        function updateDiagnosticos() {
+                $.ajax({
+                    type: 'GET',
+                    url: '/lista_diagnostico',  // Asegúrate de que esta ruta devuelva los diagnósticos en formato JSON
+                    success: function(diagnosticos) {
+                        var tableBody = '';
+                        diagnosticos.forEach(function(diagnostico) {
+                            tableBody += `<tr>                                
+                                <td>${diagnostico.diagnostico}</td>
+                                <td>${diagnostico.periodoIncubacion}</td>
+                                <td>
+                                    <button type="button" onclick="editarDiagnostico(${diagnostico.iddiagnostico})" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal">Editar</button>
+                                </td>
+                            </tr>`;
+                        });
+                        $('.brotes-grid tbody').html(tableBody); // Actualiza la tabla con nuevos datos
+                    }
+                });
+            }
+
+            function editarDiagnostico(id) {
+                console.log('ID recibido:', id); // Verifica si el ID es el correcto
+                $.getJSON('/editar_diagnostico/${id}', function(data) {
+                    console.log(data); // Verifica los datos en la consola
+                    $('#edit_diagnostico').val(data.diagnostico);
+                    $('#edit_periodoIncubacion').val(data.periodoIncubacion);
+                    $('#editModal').data('id', id).modal('show');
+                }).fail(function() {
+                    Swal.fire('Error', 'No se pudo obtener el diagnóstico', 'error');
+                });
+            }
+            
+
+            function editarDiagnostico(id) {
+                console.log('ID recibido:', id); // Asegúrate de que el ID sea el correcto
+                // Realiza la solicitud
+            }
+
+        function actualizarDiagnostico() {
+            var id = $('#editModal').data('id');
+            var diagnostico = $('#edit_diagnostico').val();
+            var periodoIncubacion = $('#edit_periodoIncubacion').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/actualizar_diagnostico/${id}',
+                contentType: 'application/json',
+                data: JSON.stringify({ diagnostico, periodo_incubacion: periodoIncubacion }),
+                success: function(response) {
+                    Swal.fire('Éxito', response.message, 'success');
+                    $('#editModal').modal('hide');
+                    updateDiagnosticos();  // Refresca la lista
+                },
+                error: function(error) {
+                    Swal.fire('Error', error.responseJSON.message, 'error');
+                }
+            });
+        }
+
+    $(document).ready(function() {
+            console.log("Cargando diagnosticos...")
+            updateDiagnosticos(); // Cargar los diagnósticos al iniciar
+        });
+
+</script>
+
+{% endblock %}

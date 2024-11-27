@@ -1,0 +1,253 @@
+{% extends "/vistas/brotes.html" %}
+
+{% block views %}
+
+<main class="main-container">  
+  <div class="card-brote">
+    <div>
+      <h2>Registro de Brotes</h2>
+    </div>
+    <div class="form">      
+      <form  method="POST" action="{{ url_for('brotes_bp.register_brotes') }}" method="post" enctype="multipart/form-data">
+
+          <div class="form-group">
+            <label for="folNotinmed">Folio notinmed:</label>
+            <input type="text" class="form-control" id="folNotinmed" name="folNotinmed" placeholder="Ingresa folio notinmed" value="{{ folionotinmed }}">
+            
+          </div>
+
+          <div class="form-group">
+            <label for="fecNotnotinmed">Fecha de notificación notinmed:</label>
+            <input type="date" id="fecNotnotinmed" name="fecNotnotinmed" value="{{ fechnotinmed }}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="evento">Tipo de evento:</label>
+            <select id="evento" name="evento" required>
+              <option value="" disabled {% if not tipoevento %}selected{% endif %}>Selecciona un tipo de evento</option>
+              <option value="BROTE COMUNITARIO" {% if tipoevento == 'BROTE COMUNITARIO' %}selected{% endif %}>BROTE COMUNITARIO</option>
+              <option value="BROTE ESCOLAR" {% if tipoevento == 'BROTE ESCOLAR' %}selected{% endif %}>BROTE ESCOLAR</option>
+              <option value="BROTE FAMILIAR" {% if tipoevento == 'BROTE FAMILIAR' %}selected{% endif %}>BROTE FAMILIAR</option>
+              <option value="BROTE FORANEO" {% if tipoevento == 'BROTE FORANEO' %}selected{% endif %}>BROTE FORÁNEO</option>
+              <option value="BROTE LOCALIZADO" {% if tipoevento == 'BROTE LOCALIZADO' %}selected{% endif %}>BROTE LOCALIZADO</option>
+              <option value="nosocomial" {% if tipoevento == 'BROTE NOSOCOMIAL' %}selected{% endif %}>BROTE NOSOCOMIAL</option>
+              <option value="CLUSTER" {% if tipoevento == 'CLUSTER' %}selected{% endif %}>CLUSTER</option>
+            </select>        
+          </div>
+
+          <div class="form-group">
+            <label for="unidad">Unidad notificante:</label>
+            <input type="text" id="unidad" name="unidad" placeholder="Ingresa nombre de la unidad" value="{{ unidadnotif }}" required>
+          </div>
+
+          <div class="form-group">            
+            <label for="institucion">Institución:</label>
+            <select id="institucion" name="institucion" required>
+                <option value="" disabled {% if not institucion %}selected{% endif %}>Selecciona la institución</option>                
+                <option value="IMSS Bienestar" {% if institucion == 'IMSS Bienestar' %}selected{% endif %}>IMSS Bienestar</option>
+                <option value="IMSS Oportunidades" {% if institucion == 'imssoport' %}selected{% endif %}>IMSS OPD</option>
+                <option value="IMSS RO" {% if institucion == 'IMSS RO' %}selected{% endif %}>IMSS RO</option>
+                <option value="ISSSTE" {% if institucion == 'ISSSTE' %}selected{% endif %}>ISSSTE</option>
+                <option value="PEMEX" {% if institucion == 'PEMEX' %}selected{% endif %}>PEMEX</option>
+            </select>      
+          </div>
+
+          <div class="form-group">
+            <label for="fecinicio">Fecha de inicio del brote:</label>
+            <input type="date" id="fechainicio" name="fechainicio" value="{{ fechinicio }}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="fecnotifica">Fecha de notificación:</label>
+            <input type="date" id="fechanotifica" name="fechanotifica" value="{{ fechnotifica }}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="diagsospecha">Diagnóstico de sospecha:</label>
+            <select id="diagsospecha" name="diagsospecha" required>
+                <option value="" disabled {% if not diagsospecha %}selected{% endif %}>Selecciona</option>
+                {% for diagnostico in diagnosticos %}
+                    <option value="{{ diagnostico['diagnostico'] }}" {% if diagsospecha == diagnostico['diagnostico'] %}selected{% endif %}>
+                        {{ diagnostico['diagnostico'] }}
+                    </option>
+                {% endfor %}
+            </select>      
+          </div>
+
+          <div class="form-group">
+            <label for="juris">Distrito:</label>
+            <select id="juris" name="juris" required>
+              <option value="" disabled {% if not juris %}selected{% endif %}>Selecciona</option>
+              {% for distrito in distritos %}
+                  <option value="{{ distrito['distrito'] }}" {% if jurisdiccion == distrito['distrito'] %}selected{% endif %}>
+                      {{ distrito['distrito'] }}
+                  </option>
+              {% endfor %}
+            </select>        
+          </div>
+
+          <div class="form-group">
+            <label for="municipio">Municipio:</label>
+            <select id="municipio" name="municipio" required>
+              <option value="" disabled {% if not municipio %}selected{% endif %}>Selecciona</option>
+                {% for mun in municipios %}
+                    <option value="{{ mun['nomMunicipio'] }}" {% if municipio == mun['nomMunicipio'] %} selected {% endif %}>
+                        {{ mun['nomMunicipio'] }}
+                    </option>
+                {% endfor %}
+            </select>  
+          </div>
+
+          <div class="form-group">
+            <label for="unilocalidaddad">Localidad:</label>
+            <input type="text" id="unilocalidaddad" name="unilocalidaddad" placeholder="Ingresa nombre de la localidad" value="{{ localidad }}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="pobmascexpuesta">Población masculina expuesta:</label>
+            <input type="number" id="pobmascexpuesta" name="pobmascexpuesta" value="{{ pobmascexp }}" required>
+          </div>        
+
+          <div class="form-group">
+            <label for="pobfemexpuesta">Población femenino expuesta:</label>
+            <input type="number" id="pobfemexpuesta" name="pobfemexpuesta" value="{{ pobfemexp }}" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="probables">Casos probables:</label>
+            <input type="number" id="probables" name="probables" value="{{ casosprob }}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmados">Casos confirmados:</label>
+            <input type="number" id="confirmados" name="confirmados" value="{{ casosconf }}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="defunciones">Defunciones:</label>
+            <input type="number" id="defunciones" name="defunciones" value="{{ defunciones }}" required>
+          </div>     
+
+          <div class="form-group">
+            <label for="fecUcaso">Fecha último caso:</label>
+            <input type="date" id="fecUcaso" name="fecUcaso" value="{{ fechultimocaso }}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="fechalta">Fecha alta:</label>
+            <input type="date" id="fechalta" name="fechalta" value="{{ fechalta }}">
+          </div>
+
+          <div class="form-group">
+            <label for="resultado">Resultado:</label>
+            <input type="text" id="resultado" name="resultado" placeholder="Ingresa el resultado" value="{{ resultado }}">
+          </div>
+          
+          <div class="form-group">
+            <label for="folAltaNoti">Folio alta notinmed:</label>
+            <input type="text" id="folAltaNoti" name="folAltaNoti" placeholder="Ingresa folio alta notinmed" value="{{ folioaltanotin }}">
+          </div>
+
+          <div class="form-group">
+            <label for="fecAltaNotinmed">Fecha alta  notinmed:</label>
+            <input type="date" id="fecAltaNotinmed" name="fecAltaNotinmed" value="{{ fechaltanotin }}">
+          </div>       
+
+          <div class="form-group">
+            <label for="nota">Se realizó nota:</label>            
+            <select id="nota" name="nota" value="{{ nota }}" required>
+              <option value="" disabled {% if not nota %}selected{% endif %}>Selecciona</option>              
+              <option value="SI" {% if nota == 'SI' %}selected{% endif %}>SI</option>
+              <option value="NO" {% if nota == 'NO' %}selected{% endif %}>NO</option>
+            </select>      
+          </div>
+          <div class="form-group">            
+            <div class="mb-3">
+              <label for="formFile" class="form-label">Adjuntar documentos</label>
+              <input class="form-control" type="file" name="archivo" id="formFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xlsx">
+            </div>
+          </div>          
+          <div class="form-group">            
+            <label for="documento">Tipo de notificación:</label>
+            <select id="documento" name="documento">
+                <option value="" disabled {% if not institucion %}selected{% endif %}>Selecciona</option>                
+                <option value="notificacion_inicial" {% if institucion == 'notificacion_inicial' %}selected{% endif %}>Notificación inicial</option>
+                <option value="seguimiento" {% if institucion == 'seguimiento' %}selected{% endif %}>Seguimiento</option>
+                <option value="notificacion_final" {% if institucion == 'notificacion_final' %}selected{% endif %}>Notificación final</option>
+                <option value="nota" {% if institucion == 'nota' %}selected{% endif %}>Nota</option>                
+            </select>      
+          </div>
+          
+    </div>
+      <!-- Card para los botones -->       
+          <div class="">
+            <hr>
+            <div class="form-buttons text-center">
+              <!-- <a type="button" class="btn btn-secondary">Regresar</a> -->
+              <button type="submit" class="btn btn-primary">Guardar</button>            
+            </div>
+          </div>  
+
+    </form>
+
+
+    
+  </div> 
+        
+</main>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                {% for category, message in messages %}
+                    Swal.fire({
+                        icon: {{ category | tojson }},
+                        title: {{ message | tojson }},
+                        showConfirmButton: true,
+                        timer: 5000
+                    });
+                {% endfor %}
+            });
+        </script>
+    {% endif %}
+{% endwith %}
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form'); // Selecciona el formulario
+  
+      form.addEventListener('submit', function(event) {
+          event.preventDefault(); // Evita el envío inicial del formulario
+  
+          Swal.fire({
+              title: '¿Desea guardar los cambios?',
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonText: 'Sí',
+              cancelButtonText: 'No',
+              reverseButtons: true,
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  form.submit(); // Envía el formulario si el usuario confirma
+              } else {
+                  Swal.fire({
+                      title: 'Cambios no guardados',
+                      icon: 'info',
+                      timer: 3000,
+                      showConfirmButton: false
+                  });
+              }
+          });
+      });
+  });
+</script>
+
+{% endblock %}
+
