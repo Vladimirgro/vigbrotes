@@ -38,9 +38,16 @@
     color: #0c0c0c;
   }
   
-  textarea {
-    resize: vertical;
-  }
+
+  
+ /* Contenedor principal de Select2 */
+.select2-container .select2-selection--single {
+  border: 1px solid #0c0c0c !important; /* Borde sólido */
+  border-radius: 5px !important; /* Bordes redondeados opcionales */
+  padding: 10px !important; /* Espaciado interno */
+  width: 100% !important; /* Ancho del select */
+  height: 100% !important; /* Altura del select */
+}
   
 
   .dataTables_length {
@@ -71,9 +78,7 @@
     background-color: #dc3545;
   }
   
-  
-  
-  
+  /* Cards */ 
   .card-brote {
     /* background-color: #263043; */
     border-radius: 8px;

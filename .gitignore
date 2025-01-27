@@ -1,0 +1,11 @@
+# Excluir librerías de Python
+*.pyc
+*.pyo
+__pycache__/
+venv/
+.venv/
+env/
+.env/
+
+# Excluir la carpeta app/static/uploads
+app/static/uploads/

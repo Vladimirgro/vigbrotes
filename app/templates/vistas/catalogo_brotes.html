@@ -108,6 +108,11 @@
         var diagnostico = $('#cat_diagnostico').val();
         var periodoIncubacion = $('#periodoIncubacion').val();
 
+        if (!diagnostico || !periodoIncubacion) {
+            Swal.fire('Advertencia', 'Todos los campos son obligatorios.', 'warning');
+            return;
+        }
+
         // Crear el objeto de datos
         var formData = {
             diagnostico_cat: diagnostico,
@@ -117,7 +122,7 @@
         // Envío de datos mediante AJAX
         $.ajax({
             type: 'POST',
-            url: '/register_catalogo',  // Asegúrate de que esta URL sea correcta
+            url: `/register_catalogo`,  // Asegúrate de que esta URL sea correcta
             data: JSON.stringify(formData),
             contentType: 'application/json',
             success: function(response) {
@@ -151,7 +156,7 @@
         function updateDiagnosticos() {
                 $.ajax({
                     type: 'GET',
-                    url: '/lista_diagnostico',  // Asegúrate de que esta ruta devuelva los diagnósticos en formato JSON
+                    url: `/lista_diagnostico`,  // Asegúrate de que esta ruta devuelva los diagnósticos en formato JSON
                     success: function(diagnosticos) {
                         var tableBody = '';
                         diagnosticos.forEach(function(diagnostico) {
@@ -170,7 +175,7 @@
 
             function editarDiagnostico(id) {
                 console.log('ID recibido:', id); // Verifica si el ID es el correcto
-                $.getJSON('/editar_diagnostico/${id}', function(data) {
+                $.getJSON(`/editar_diagnostico/${id}`, function(data) {
                     console.log(data); // Verifica los datos en la consola
                     $('#edit_diagnostico').val(data.diagnostico);
                     $('#edit_periodoIncubacion').val(data.periodoIncubacion);
@@ -193,7 +198,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '/actualizar_diagnostico/${id}',
+                url: `/actualizar_diagnostico/${id}`,
                 contentType: 'application/json',
                 data: JSON.stringify({ diagnostico, periodo_incubacion: periodoIncubacion }),
                 success: function(response) {
@@ -202,7 +207,11 @@
                     updateDiagnosticos();  // Refresca la lista
                 },
                 error: function(error) {
-                    Swal.fire('Error', error.responseJSON.message, 'error');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: error.responseJSON?.message || 'Ocurrió un error inesperado',
+                    });
                 }
             });
         }

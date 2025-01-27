@@ -5,7 +5,7 @@ from datetime import datetime
 class Brote:
     def __init__(self, folionotinmed, fechnotinmed, tipoevento, unidadnotif, institucion, fechinicio, fechnotifica, diagsospecha, 
                  jurisdiccion, municipio, localidad, pobmascexp, pobfemexp, casosprob, casosconf, defunciones,
-                 fechultimocaso, fechalta, resultado, folioaltanotin, fechaltanotin, nota, archivo, documento, fechcaptura, idbrote=None):
+                 fechultimocaso, fechalta, resultado, folioaltanotin, fechaltanotin, nota, fechcaptura, idbrote=None):
         self.idbrote = idbrote
         self.folionotinmed = folionotinmed
         self.fechnotinmed = fechnotinmed
@@ -28,27 +28,28 @@ class Brote:
         self.resultado = resultado
         self.folioaltanotin = folioaltanotin
         self.fechaltanotin = fechaltanotin
-        self.nota = nota
-        self.archivo = archivo
-        self.documento = documento
+        self.nota = nota        
         self.fechcaptura = fechcaptura if fechcaptura else datetime.now()
+        
         
     @classmethod
     def create(cls, **kwargs):
         conn = MySQLConnection().connect()
         try:
-            with conn.cursor() as cursor:
+            with conn.cursor(pymysql.cursors.DictCursor) as cursor:
                 sql = """
                     INSERT INTO brote (folionotinmed, fechnotinmed, tipoevento, unidadnotif, institucion, fechinicio, fechnotifica, diagsospecha, 
                                        jurisdiccion, municipio, localidad, pobmascexp, pobfemexp, casosprob, casosconf, defunciones,
-                                       fechultimocaso, fechalta, resultado, folioaltanotin, fechaltanotin, nota, archivo, documento, fechcaptura)
+                                       fechultimocaso, fechalta, resultado, folioaltanotin, fechaltanotin, nota, fechcaptura)
                     VALUES (%(folionotinmed)s, %(fechnotinmed)s, %(tipoevento)s, %(unidadnotif)s, %(institucion)s, %(fechinicio)s, %(fechnotifica)s, %(diagsospecha)s, 
                             %(jurisdiccion)s, %(municipio)s, %(localidad)s, %(pobmascexp)s, %(pobfemexp)s, %(casosprob)s, %(casosconf)s, %(defunciones)s,
-                            %(fechultimocaso)s, %(fechalta)s, %(resultado)s, %(folioaltanotin)s, %(fechaltanotin)s, %(nota)s, %(archivo)s, %(documento)s, NOW())
+                            %(fechultimocaso)s, %(fechalta)s, %(resultado)s, %(folioaltanotin)s, %(fechaltanotin)s, %(nota)s, NOW())
                 """
                 cursor.execute(sql, kwargs)
-                conn.commit()  # Confirma la transacción
+                conn.commit()  # Confirma la transacción                        
+                brote_id = cursor.lastrowid  # Obtener el ID del brote insertado
                 print("Registro insertado correctamente")
+                return brote_id
         except pymysql.MySQLError as e:
             print(f"Error al insertar el registro: {e}")
         finally:
@@ -87,6 +88,8 @@ class Brote:
         finally:
             conn.close()
         
+        
+        
         return total_brotes
 
     # Método para obtener todos los brotes con paginación
@@ -113,13 +116,13 @@ class Brote:
   
     
     @classmethod
-    def get_by_id(cls, id):
+    def get_by_id(cls, idbrote):
         conn = None
         brote = None
         try:
             conn = MySQLConnection().connect()
             with conn.cursor(pymysql.cursors.DictCursor) as cursor:
-                cursor.execute("SELECT * FROM brote WHERE idbrote = %s", (id,))
+                cursor.execute("SELECT * FROM brote WHERE idbrote = %s", (idbrote,))
                 brote = cursor.fetchone()                
         except pymysql.MySQLError as e:
             print(f"Error al obtener el brote: {e}")
@@ -137,7 +140,9 @@ class Brote:
         try:
             conn = MySQLConnection().connect()  # Asegúrate de que la conexión esté establecida
             cursor = conn.cursor()
-            cursor.execute("""
+            
+            # Preparar los valores para la consulta
+            query = """
                 UPDATE brote
                 SET
                     folionotinmed = %s,
@@ -161,17 +166,21 @@ class Brote:
                     resultado = %s,
                     folioaltanotin = %s,
                     fechaltanotin = %s,                
-                    nota = %s,
-                    documento = %s,
-                    archivo = %s
+                    nota = %s
                 WHERE idbrote = %s
-            """, (*data.values(), item_id))
+            """
+            
+            cursor.execute(query, (*data.values(), item_id))
             conn.commit()
+            
         except pymysql.MySQLError as e:
+            if conn:
+                conn.rollback()  # Realiza un rollback en caso de error
             print(f"Error al actualizar el registro: {e}")
         finally:
             if conn:
                 conn.close()
+
         
     
     @classmethod

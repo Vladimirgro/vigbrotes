@@ -8,17 +8,17 @@
       <h2>Registro de Brotes</h2>
     </div>
     <div class="form">      
-      <form  method="POST" action="{{ url_for('brotes_bp.register_brotes') }}" method="post" enctype="multipart/form-data">
+      <form  method="POST" action="{{ url_for('brotes_bp.register_brotes') }}" enctype="multipart/form-data">
 
           <div class="form-group">
             <label for="folNotinmed">Folio notinmed:</label>
-            <input type="text" class="form-control" id="folNotinmed" name="folNotinmed" placeholder="Ingresa folio notinmed" value="{{ folionotinmed }}">
+            <input type="text" id="folNotinmed" name="folNotinmed" placeholder="Ingresa folio notinmed" value="{{ folionotinmed }}">
             
           </div>
 
           <div class="form-group">
             <label for="fecNotnotinmed">Fecha de notificación notinmed:</label>
-            <input type="date" id="fecNotnotinmed" name="fecNotnotinmed" value="{{ fechnotinmed }}" required>
+            <input type="date" id="fecNotnotinmed" name="fecNotnotinmed" value="{{ fechnotinmed }}">
           </div>
 
           <div class="form-group">
@@ -45,10 +45,12 @@
             <select id="institucion" name="institucion" required>
                 <option value="" disabled {% if not institucion %}selected{% endif %}>Selecciona la institución</option>                
                 <option value="IMSS Bienestar" {% if institucion == 'IMSS Bienestar' %}selected{% endif %}>IMSS Bienestar</option>
-                <option value="IMSS Oportunidades" {% if institucion == 'imssoport' %}selected{% endif %}>IMSS OPD</option>
+                <option value="IMSS OPD" {% if institucion == 'IMSS OPD' %}selected{% endif %}>IMSS OPD</option>
                 <option value="IMSS RO" {% if institucion == 'IMSS RO' %}selected{% endif %}>IMSS RO</option>
                 <option value="ISSSTE" {% if institucion == 'ISSSTE' %}selected{% endif %}>ISSSTE</option>
-                <option value="PEMEX" {% if institucion == 'PEMEX' %}selected{% endif %}>PEMEX</option>
+                <option value="Otras" {% if institucion == 'Otras' %}selected{% endif %}>OTRAS</option>
+                <option value="DIF" {% if institucion == 'DIF' %}selected{% endif %}>DIF</option>
+                <option value="PEMEX" {% if institucion == 'PEMEX' %}selected{% endif %}>PEMEX</option>                
             </select>      
           </div>
 
@@ -109,7 +111,7 @@
           </div>        
 
           <div class="form-group">
-            <label for="pobfemexpuesta">Población femenino expuesta:</label>
+            <label for="pobfemexpuesta">Población femenina expuesta:</label>
             <input type="number" id="pobfemexpuesta" name="pobfemexpuesta" value="{{ pobfemexp }}" required>
           </div>
           
@@ -160,22 +162,22 @@
               <option value="SI" {% if nota == 'SI' %}selected{% endif %}>SI</option>
               <option value="NO" {% if nota == 'NO' %}selected{% endif %}>NO</option>
             </select>      
+          </div>          
+          <div class="form-group">            
+            <label for="tipo_notificacion">Tipo de notificación:</label>
+            <select id="tipo_notificacion" name="tipo_notificacion">
+                <option value="" disabled {% if not tipo_notificacion %}selected{% endif %}>Selecciona</option>                
+                <option value="notificacion_inicial" {% if tipo_notificacion == 'notificacion_inicial' %}selected{% endif %}>Notificación inicial</option>
+                <option value="seguimiento" {% if tipo_notificacion == 'seguimiento' %}selected{% endif %}>Seguimiento</option>
+                <option value="notificacion_final" {% if tipo_notificacion == 'notificacion_final' %}selected{% endif %}>Notificación final</option>
+                <option value="nota" {% if tipo_notificacion == 'nota' %}selected{% endif %}>Nota</option>                
+            </select>      
           </div>
           <div class="form-group">            
             <div class="mb-3">
               <label for="formFile" class="form-label">Adjuntar documentos</label>
-              <input class="form-control" type="file" name="archivo" id="formFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xlsx">
+              <input class="form-control" type="file" name="archivo" id="formFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xlsx,.xlsm,.xls,.csv">
             </div>
-          </div>          
-          <div class="form-group">            
-            <label for="documento">Tipo de notificación:</label>
-            <select id="documento" name="documento">
-                <option value="" disabled {% if not institucion %}selected{% endif %}>Selecciona</option>                
-                <option value="notificacion_inicial" {% if institucion == 'notificacion_inicial' %}selected{% endif %}>Notificación inicial</option>
-                <option value="seguimiento" {% if institucion == 'seguimiento' %}selected{% endif %}>Seguimiento</option>
-                <option value="notificacion_final" {% if institucion == 'notificacion_final' %}selected{% endif %}>Notificación final</option>
-                <option value="nota" {% if institucion == 'nota' %}selected{% endif %}>Nota</option>                
-            </select>      
           </div>
           
     </div>
@@ -220,6 +222,14 @@
 
 
 <script>
+  // Inicializa Select2
+  $(document).ready(function() {
+    $('#juris ,#municipio, #diagsospecha').select2({
+      placeholder: 'Selecciona',
+      // allowClear: true
+    });
+  });
+
   document.addEventListener('DOMContentLoaded', function() {
       const form = document.querySelector('form'); // Selecciona el formulario
   

@@ -6,10 +6,12 @@
 <table id="brotes-table" class="display">
     <thead>
         <tr>
-            <th>Folio Notificación</th>
+            <th>Id Brote</th>            
             <th>Tipo de Evento</th>
             <th>Institución</th>
+            <th>Jurisdicción</th>
             <th>Municipio</th>
+            <th>Localidad</th>
             <th>Fecha de Notificación</th>
             <th>Diagnóstico de Sospecha</th>
             <th>Acciones</th>            
@@ -18,11 +20,13 @@
     <tbody>
         {% for brote in brotes %}
         <tr>
-            <td>{{ brote.folionotinmed }}</td>
+            <td>{{ brote.idbrote }}</td>            
             <td>{{ brote.tipoevento }}</td>
             <td>{{ brote.institucion }}</td>
+            <td>{{ brote.jurisdiccion }}</td>
             <td>{{ brote.municipio }}</td>
-            <td>{{ brote.fechnotinmed | format_date }}</td>  <!-- Formato de fecha -->
+            <td>{{ brote.localidad }}</td>
+            <td>{{ brote.fechnotifica | format_date }}</td>  <!-- Formato de fecha -->
             <td>{{ brote.diagsospecha }}</td>
             <td>
                 <a href="/edit_brote/{{ brote.idbrote }}" class="btn btn-edit">Editar</a>

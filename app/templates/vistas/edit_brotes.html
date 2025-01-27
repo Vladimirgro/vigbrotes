@@ -2,12 +2,32 @@
 
 {% block views %}
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for category, message in messages %}
+                Swal.fire({
+                    icon: "{{ category }}",
+                    title: "{{ message }}",
+                    showConfirmButton: true,
+                    timer: 5000
+                });
+            {% endfor %}
+        });
+    </script>
+{% endif %}
+{% endwith %}
+
+
+
+
 <main class="main-container">
   <div style="display: flex; justify-content: space-between; align-items: center;">
     <h2>Actualizar brote epidemiológico</h2>
       <ul class="nav nav-underline">          
         <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'catalogo_brotes.register_catalogo' %}active{% endif %}" href="{{ url_for('brotes_bp.files') }}">Documentos</a>
+            <a class="nav-link {% if request.endpoint == 'catalogo_brotes.register_catalogo' %}active{% endif %}" href="{{ url_for('brotes_bp.files', idbrote=brote.idbrote) }}">Documentos</a>
         </li>
     </ul>
   </div>
@@ -20,26 +40,21 @@
 
           <div class="form-group">
             <label for="folNotinmed">Folio notinmed:</label>
-            <input type="text" id="folNotinmed" name="folNotinmed" placeholder="Ingresa folio notinmed" value="{{ brote.folionotinmed }}" required>
+            <input type="text" id="folNotinmed" name="folNotinmed" placeholder="Ingresa folio notinmed" value="{{ brote.folionotinmed }}">
           </div>
 
           <div class="form-group">
             <label for="fecNotnotinmed">Fecha de notificación notinmed:</label>
-            <input type="date" id="fecNotnotinmed" name="fecNotnotinmed" value="{{ brote.fechnotinmed.strftime('%Y-%m-%d') if brote.fechnotinmed else '' }}" required>
+            <input type="date" id="fecNotnotinmed" name="fecNotnotinmed" value="{{ brote.fechnotinmed.strftime('%Y-%m-%d') if brote.fechnotinmed else '' }}">
           </div>
 
           <div class="form-group">
             <label for="evento">Tipo de evento:</label>
-            <select id="evento" name="evento" required>
-                <option value="" disabled {% if not brote.tipoevento %}selected{% endif %}>Selecciona un tipo de evento</option>
-                <option value="BROTE COMUNITARIO" {% if brote.tipoevento == 'BROTE COMUNITARIO' %}selected{% endif %}>BROTE COMUNITARIO</option>
-                <option value="BROTE ESCOLAR" {% if brote.tipoevento == 'BROTE ESCOLAR' %}selected{% endif %}>BROTE ESCOLAR</option>
-                <option value="BROTE FAMILIAR" {% if brote.tipoevento == 'BROTE FAMILIAR' %}selected{% endif %}>BROTE FAMILIAR</option>
-                <option value="BROTE FORANEO" {% if brote.tipoevento == 'BROTE FORANEO' %}selected{% endif %}>BROTE FORANEO</option>
-                <option value="BROTE LOCALIZADO" {% if brote.tipoevento == 'BROTE LOCALIZADO' %}selected{% endif %}>BROTE LOCALIZADO</option>
-                <option value="BROTE NOSOCOMIAL" {% if brote.tipoevento == 'BROTE NOSOCOMIAL' %}selected{% endif %}>BROTE NOSOCOMIAL</option>
-                <option value="CLUSTER" {% if brote.tipoevento == 'CLUSTER' %}selected{% endif %}>CLUSTER</option>
-              </select>  
+            <select id="evento" name="evento">
+              {% for tipo in ['BROTE COMUNITARIO', 'BROTE ESCOLAR', 'BROTE FAMILIAR', 'BROTE FORANEO', 'BROTE LOCALIZADO', 'BROTE NOSOCOMIAL', 'CLUSTER'] %}
+                <option value="{{ tipo }}" {% if brote.tipoevento == tipo %}selected{% endif %}>{{ tipo }}</option>
+              {% endfor %}
+            </select> 
           </div>
 
           <div class="form-group">
@@ -52,9 +67,11 @@
             <select id="institucion" name="institucion" required>
                 <option value="" disabled {% if not brote.institucion %}selected{% endif %}>Selecciona la institución</option>
                 <option value="IMSS Bienestar" {% if brote.institucion == 'IMSS Bienestar' %}selected{% endif %}>IMSS Bienestar</option>
-                <option value="IMSS Oportunidades" {% if brote.institucion == 'imssoport' %}selected{% endif %}>IMSS Oportunidades</option>
+                <option value="IMSS OPD" {% if brote.institucion == 'IMSS OPD' %}selected{% endif %}>IMSS OPD</option>
                 <option value="IMSS RO" {% if brote.institucion == 'IMSS RO' %}selected{% endif %}>IMSS RO</option>
                 <option value="ISSSTE" {% if brote.institucion == 'ISSSTE' %}selected{% endif %}>ISSSTE</option>
+                <option value="Otras" {% if brote.institucion == 'Otras' %}selected{% endif %}>OTRAS</option>
+                <option value="DIF" {% if brote.institucion == 'DIF' %}selected{% endif %}>DIF</option>
                 <option value="PEMEX" {% if brote.institucion == 'PEMEX' %}selected{% endif %}>PEMEX</option>          
             </select>      
           </div>
@@ -116,7 +133,7 @@
           </div>        
 
           <div class="form-group">
-            <label for="pobfemexpuesta">Población femenino expuesta:</label>
+            <label for="pobfemexpuesta">Población femenina expuesta:</label>
             <input type="number" id="pobfemexpuesta" name="pobfemexpuesta" value="{{ brote.pobfemexp }}" required>
           </div>
           
@@ -167,24 +184,26 @@
                 <option value="SI" {% if brote.nota == 'SI' %}selected{% endif %}>SI</option>
                 <option value="NO" {% if brote.nota == 'NO' %}selected{% endif %}>NO</option>
             </select>
-          </div>
+          </div>          
 
+          <div class="form-group">            
+            <label for="tipo_notificacion">Tipo de notificación:</label>
+            <select id="tipo_notificacion" name="tipo_notificacion">
+                <option value="" disabled {% if not brote.tipo_notificacion %}selected{% endif %}>Selecciona</option>                
+                <option value="notificacion_inicial" {% if brote.tipo_notificacion == 'notificacion_inicial' %}selected{% endif %}>Notificación inicial</option>
+                <option value="seguimiento" {% if brote.tipo_notificacion == 'seguimiento' %}selected{% endif %}>Seguimiento</option>
+                <option value="notificacion_final" {% if brote.tipo_notificacion == 'notificacion_final' %}selected{% endif %}>Notificación final</option>
+                <option value="nota" {% if brote.tipo_notificacion == 'nota' %}selected{% endif %}>Nota</option>                
+            </select>      
+        </div>
+        
           <div class="form-group">            
             <div class="mb-3">
               <label for="formFile" class="form-label">Adjuntar documentos</label>
-              <input class="form-control" type="file" name="archivo" id="formFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xlsx">
+              <input class="form-control" type="file" name="archivo" id="formFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xlsx,.xlsm,.xls,.csv">
             </div>
-          </div>          
-          <div class="form-group">            
-            <label for="documento">Tipo de notificación:</label>
-            <select id="documento" name="documento">
-                <option value="" disabled {% if not institucion %}selected{% endif %}>Selecciona</option>                
-                <option value="notificacion_inicial" {% if institucion == 'notificacion_inicial' %}selected{% endif %}>Notificación inicial</option>
-                <option value="seguimiento" {% if institucion == 'seguimiento' %}selected{% endif %}>Seguimiento</option>
-                <option value="notificacion_final" {% if institucion == 'notificacion_final' %}selected{% endif %}>Notificación final</option>
-                <option value="nota" {% if institucion == 'nota' %}selected{% endif %}>Nota</option>                
-            </select>      
           </div>
+
     </div>
       <!-- Card para los botones -->       
           <div class="">
@@ -237,21 +256,5 @@
   });
   </script>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            {% for category, message in messages %}
-                Swal.fire({
-                    icon: "{{ category }}",
-                    title: "{{ message }}",
-                    showConfirmButton: true,
-                    timer: 5000
-                });
-            {% endfor %}
-        });
-    </script>
-{% endif %}
-{% endwith %}
 
 {% endblock %}

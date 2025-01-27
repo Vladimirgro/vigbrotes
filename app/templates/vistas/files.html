@@ -1,31 +1,41 @@
 {% extends "/base/dashboard.html" %}
 
+
 {% block main %}
-    <h1>Archivos Subidos</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Ruta</th>
-                <th>Fecha</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for brote in brotes %}
-            <tr>
-                <td>{{ brote[1] }}</td>
-                <td>{{ brote[3] }}</td>
-                <td><a href="{{ brote[2] }}" target="_blank">Abrir</a></td>
-                <td>{{ brote[4] }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-              <div class="">
-            <hr>
-            <div class="form-buttons text-center">
-              <a href="{{ url_for('brotes_bp.lista_brotes') }}" type="button" class="btn btn-secondary">Regresar</a>                
+    <h2>Archivos Subidos para el Brote: {{ brote['diagsospecha'] }}</h2>
+
+    {% if documentos %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Nombre del Archivo</th>
+                    <th>Tipo de Notificación</th>
+                    <th>Descargar</th>
+                    <th>Fecha de Carga</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in documentos %}
+                <tr>
+                    <td>{{ doc.nombre_archivo }}</td>
+                    <td>{{ doc.tipo_notificacion }}</td>
+                    <td>
+                        <a href="{{ url_for('brotes_bp.descargar_archivo', filepath=doc.path) }}" target="_blank">Abrir</a>                        
+                    </td>
+                    <td>{{ doc.fechacarga.strftime('%d/%m/%Y') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay documentos asociados a este brote.</p>
+    {% endif %}
+
+    <div>
+        <hr>
+        <div class="form-buttons text-center">             
+             <a href="{{ url_for('brotes_bp.edit_brote', idbrote=brote['idbrote']) }}" type="button" class="btn btn-secondary">Regresar</a>
             </div>
-          </div> 
+        </div>
+    </div>
 {% endblock %}
