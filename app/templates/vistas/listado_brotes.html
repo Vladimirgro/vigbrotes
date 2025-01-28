@@ -7,6 +7,7 @@
     <thead>
         <tr>
             <th>Id Brote</th>            
+            <th>Folio Notinmed</th>            
             <th>Tipo de Evento</th>
             <th>Institución</th>
             <th>Jurisdicción</th>
@@ -21,6 +22,7 @@
         {% for brote in brotes %}
         <tr>
             <td>{{ brote.idbrote }}</td>            
+            <td>{{ brote.folionotinmed }}</td>
             <td>{{ brote.tipoevento }}</td>
             <td>{{ brote.institucion }}</td>
             <td>{{ brote.jurisdiccion }}</td>

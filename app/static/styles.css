@@ -17,6 +17,7 @@ li {
 
 body {
     font-family: 'Poppins', sans-serif;
+    overflow-y: hidden;
 }
 
 .wrapper {
